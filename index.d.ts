@@ -22,6 +22,7 @@ declare namespace createClient {
     archiveMessage (id: MessageId): Promise<void>
     fetchMessageBody (id: MessageId, withMimeType: MimeType): Promise<MessageBody>
     fetchMessageMeta (id: MessageId): Promise<MessageMeta>
+    getServerTime(): Promise<Date>
     search (query: string): Promise<MessageId[]>
     send (email: OutgoingMessage): Promise<void>
   }

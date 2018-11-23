@@ -8,21 +8,28 @@ const createClient = require('../')
 const address = process.env.WEBMAIL_OUTLOOK_ADDRESS
 const token = process.env.WEBMAIL_OUTLOOK_TOKEN
 
-;(address && token ? describe : describe.skip)('Outlook', () => {
-  const client = createClient('outlook', token)
+describe('Outlook', () => {
+  const client = createClient('outlook', token || 'x')
   const subject = shortid()
   const body = `This is the body id: ${shortid()}`
 
   let messageId
 
-  it('.send', async () => {
+  it('.getServerTime', async () => {
+    const serverTime = (await client.getServerTime()).getTime() / 1000
+    const localTime = (new Date()).getTime() / 1000
+
+    assert.ok(serverTime < localTime + 5 && serverTime > localTime - 5)
+  })
+
+  ;(address && token ? it : it.skip)('.send', async () => {
     const from = { name: 'Sender', address }
     const to = { name: 'Receiver', address }
 
     await client.send({ from, to, subject, body })
   })
 
-  it('.search', async () => {
+  ;(address && token ? it : it.skip)('.search', async () => {
     const ids = await client.search(`subject:${subject}`)
 
     assert.strictEqual(ids.length, 1)
@@ -31,18 +38,18 @@ const token = process.env.WEBMAIL_OUTLOOK_TOKEN
     messageId = ids[0]
   })
 
-  it('.fetchMessageBody', async () => {
+  ;(address && token ? it : it.skip)('.fetchMessageBody', async () => {
     assert.strictEqual(await client.fetchMessageBody(messageId, 'text/plain'), body)
   })
 
-  it('.fetchMessageMeta', async () => {
+  ;(address && token ? it : it.skip)('.fetchMessageMeta', async () => {
     const meta = await client.fetchMessageMeta(messageId)
 
     assert.strictEqual(meta.from.address, address)
     assert.strictEqual(meta.subject, subject)
   })
 
-  it('.archiveMessage', async () => {
+  ;(address && token ? it : it.skip)('.archiveMessage', async () => {
     await client.archiveMessage(messageId)
   })
 })
