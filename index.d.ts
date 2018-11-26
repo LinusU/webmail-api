@@ -18,11 +18,24 @@ declare namespace createClient {
     body: string
   }
 
+  interface ValidTokenInfo {
+    valid: true
+    email: string
+  }
+
+  interface InvalidTokenInfo {
+    valid: false
+    email: null
+  }
+
+  type TokenInfo = ValidTokenInfo | InvalidTokenInfo
+
   interface Client {
     archiveMessage (id: MessageId): Promise<void>
     fetchMessageBody (id: MessageId, withMimeType: MimeType): Promise<MessageBody>
     fetchMessageMeta (id: MessageId): Promise<MessageMeta>
     getServerTime(): Promise<Date>
+    getTokenInfo(): Promise<TokenInfo>
     search (query: string): Promise<MessageId[]>
     send (email: OutgoingMessage): Promise<void>
   }

@@ -23,6 +23,21 @@ for (const provider of ['gmail', 'outlook']) {
       assert.ok(serverTime < localTime + 5 && serverTime > localTime - 5)
     })
 
+    it('.getTokenInfo - invalid', async () => {
+      const client = createClient(provider, 'x')
+      const result = await client.getTokenInfo()
+
+      assert.strictEqual(result.valid, false)
+      assert.strictEqual(result.email, null)
+    })
+
+    ;(address && token ? it : it.skip)('.getTokenInfo - valid', async () => {
+      const result = await client.getTokenInfo()
+
+      assert.strictEqual(result.valid, true)
+      assert.strictEqual(result.email, address)
+    })
+
     ;(address && token ? it : it.skip)('.send', async () => {
       const from = { name: 'Sender', address }
       const to = { name: 'Receiver', address }
